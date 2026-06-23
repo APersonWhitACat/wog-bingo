@@ -1,7 +1,7 @@
 import random
 import streamlit as st
 
-BINGO_ITEMS = [
+ITEMS = [
     '"add 5th gen aircrafts!"',
     'DOGSHIT opinion or suggestion',
     'corny ass profile/pfp',
@@ -25,157 +25,170 @@ BINGO_ITEMS = [
     '"add (insert nation) tree!"',
     "can't lose their argument",
     'rants about russian aircrafts',
-    'huge fuckass ego'
+    'huge fuckass ego',
 ]
 
 st.set_page_config(
     page_title="Wings of Glory Bingo",
     page_icon="🎲",
-    layout="centered"
+    layout="wide",
 )
 
-CSS = """
+st.markdown(
+    """
 <style>
 .stApp {
-    background: radial-gradient(circle at top, #172033 0%, #070910 60%);
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255,209,102,.18), transparent 28%),
+        linear-gradient(180deg, #0b1020 0%, #070910 100%);
     color: #f8fafc;
 }
 
 .block-container {
-    max-width: 760px;
-    padding-top: 1.2rem;
+    padding-top: 1.1rem;
+    padding-bottom: 2rem;
+    max-width: 1250px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: .6rem;
 }
 
 .title {
-    text-align: center;
     color: #ffd166;
-    font-size: 2.2rem;
-    font-weight: 900;
-    line-height: 1.1;
-    text-shadow: 0 0 12px rgba(255, 209, 102, .45);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 1000;
+    line-height: 1;
+    text-shadow: 0 0 18px rgba(255, 209, 102, .55);
 }
 
 .subtitle {
-    text-align: center;
     color: #a8b3c7;
-    font-weight: 800;
-    margin-bottom: .5rem;
+    font-weight: 900;
+    letter-spacing: .12em;
+    margin-top: .25rem;
 }
 
 .neon {
-    height: 3px;
-    margin: 8px 40px 18px 40px;
-    background: linear-gradient(90deg, #ef476f, #ffd166, #06d6a0, #4cc9f0, #b517ff);
+    height: 4px;
+    max-width: 760px;
+    margin: .7rem auto 1rem auto;
     border-radius: 999px;
-    box-shadow: 0 0 16px rgba(255, 209, 102, .8);
-    animation: glow 2.2s ease-in-out infinite alternate;
+    background: linear-gradient(90deg, #ef476f, #ffd166, #06d6a0, #4cc9f0, #b517ff);
+    box-shadow: 0 0 18px rgba(255, 209, 102, .75);
+    animation: glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
-    from { filter: brightness(.8); opacity: .75; }
-    to { filter: brightness(1.35); opacity: 1; }
-}
-
-.dice {
-    text-align: center;
-    color: #ffd166;
-    font-size: 1.8rem;
-    animation: bob 1.4s ease-in-out infinite alternate;
-}
-
-@keyframes bob {
-    from { transform: translateY(0px); }
-    to { transform: translateY(-4px); }
-}
-
-.board {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 3px;
-    padding: 6px;
-    background: #ffb703;
-    border-radius: 14px;
-    box-shadow: 0 0 24px rgba(255, 183, 3, .25);
-}
-
-.cell {
-    min-height: 92px;
-    border-radius: 10px;
-    background: #172033;
-    color: #f8fafc;
-    border: 1px solid #30405a;
-    padding: 8px;
-    font-size: .78rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    word-break: normal;
-    overflow-wrap: anywhere;
-}
-
-.cell.alt {
-    background: #1b2740;
-}
-
-.cell.marked {
-    background: #138a52;
-    border-color: #33e28e;
-    color: #ecfff4;
-    box-shadow: inset 0 0 16px rgba(46, 232, 142, .25);
-}
-
-.cell.free {
-    background: #532e86;
-    border-color: #ffd166;
-    color: #ffd166;
-    font-size: 1rem;
-    font-style: italic;
-}
-
-.big-bingo {
-    text-align: center;
-    font-size: 3rem;
-    font-weight: 1000;
-    color: #ffd166;
-    text-shadow: 0 0 14px #ffd166, 0 0 30px #ef476f;
-    animation: pulse 0.8s ease-in-out infinite alternate;
-}
-
-@keyframes pulse {
-    from { transform: scale(1); filter: brightness(1); }
-    to { transform: scale(1.05); filter: brightness(1.4); }
+    from { opacity: .7; filter: brightness(.9); }
+    to { opacity: 1; filter: brightness(1.35); }
 }
 
 .rules {
-    background: #141a24;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 12px 16px;
+    background: rgba(20, 26, 36, .96);
+    border: 1px solid #34425a;
+    border-radius: 14px;
+    padding: .85rem 1rem;
     color: #f8fafc;
-    margin-top: 10px;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 18px rgba(0,0,0,.22);
+}
+
+.board-title {
+    color: #ffd166;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 950;
+    margin: .2rem 0 .45rem;
+}
+
+.board-shell {
+    background: linear-gradient(135deg, #ffb703, #ffd166, #9a6b00);
+    border-radius: 18px;
+    padding: 5px;
+    box-shadow: 0 0 25px rgba(255,183,3,.28);
+    margin-bottom: 1.1rem;
+}
+
+.board-inner {
+    background: #2b210e;
+    border-radius: 14px;
+    padding: 4px;
+}
+
+/* Streamlit button cells */
+div[data-testid="stButton"] > button {
+    width: 100%;
+    min-height: 90px;
+    height: 90px;
+    border-radius: 10px;
+    border: 1px solid #30405a;
+    background: #172033;
+    color: #f8fafc;
+    padding: 6px;
+    font-size: clamp(.55rem, .85vw, .82rem);
+    font-weight: 900;
+    line-height: 1.12;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: inset 0 0 12px rgba(255,255,255,.025);
+}
+
+div[data-testid="stButton"] > button:hover {
+    border-color: #ffd166;
+    color: #ffd166;
+    background: #1d2740;
+}
+
+/* Main control buttons */
+.control-row div[data-testid="stButton"] > button {
+    min-height: 42px;
+    height: 42px;
+    font-size: .9rem;
+    background: #251a08;
+    color: #ffd166;
+    border-color: #60430b;
+}
+
+/* marked/free styling by button text marker */
+div[data-testid="stButton"] > button:has(p:contains("✓")) {
+    background: #138a52;
+}
+
+/* Mobile / smaller screens */
+@media (max-width: 800px) {
+    div[data-testid="stButton"] > button {
+        min-height: 76px;
+        height: 76px;
+        font-size: .56rem;
+        padding: 3px;
+    }
 }
 </style>
-"""
-st.markdown(CSS, unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
-def make_board():
-    items = BINGO_ITEMS.copy()
-    random.shuffle(items)
+def new_board():
+    shuffled = ITEMS[:]
+    random.shuffle(shuffled)
     board = []
     idx = 0
     for i in range(25):
         if i == 12:
             board.append("FREE SPACE")
         else:
-            board.append(items[idx])
+            board.append(shuffled[idx])
             idx += 1
     return board
 
 
-def winning_lines():
+def win_lines():
     lines = []
     for r in range(5):
         lines.append([r * 5 + c for c in range(5)])
@@ -187,93 +200,151 @@ def winning_lines():
 
 
 def has_bingo(marked):
-    return any(all(i in marked for i in line) for line in winning_lines())
+    return any(all(i in marked for i in line) for line in win_lines())
 
 
-if "board" not in st.session_state:
-    st.session_state.board = make_board()
-if "marked" not in st.session_state:
-    st.session_state.marked = {12}
-if "show_rules" not in st.session_state:
-    st.session_state.show_rules = False
+def ensure_boards(count):
+    if "boards" not in st.session_state:
+        st.session_state.boards = []
+    if "marked" not in st.session_state:
+        st.session_state.marked = []
+
+    while len(st.session_state.boards) < count:
+        st.session_state.boards.append(new_board())
+        st.session_state.marked.append({12})
+
+    while len(st.session_state.boards) > count:
+        st.session_state.boards.pop()
+        st.session_state.marked.pop()
 
 
-def roll():
-    st.session_state.board = make_board()
-    st.session_state.marked = {12}
-    st.session_state.show_rules = False
+def roll_all():
+    for i in range(len(st.session_state.boards)):
+        st.session_state.boards[i] = new_board()
+        st.session_state.marked[i] = {12}
 
 
-def reset():
-    st.session_state.marked = {12}
+def reset_all():
+    for i in range(len(st.session_state.marked)):
+        st.session_state.marked[i] = {12}
 
 
-st.markdown('<div class="dice">⚂ 🎲 ⚄</div>', unsafe_allow_html=True)
-st.markdown('<div class="title">✦ Wings of Glory ✦<br>LOW RANK BINGO</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">casino roll mode</div>', unsafe_allow_html=True)
-st.markdown('<div class="neon"></div>', unsafe_allow_html=True)
+def toggle(board_i, cell_i):
+    if cell_i == 12:
+        return
+    marked = st.session_state.marked[board_i]
+    if cell_i in marked:
+        marked.remove(cell_i)
+    else:
+        marked.add(cell_i)
 
-c1, c2, c3 = st.columns(3)
-with c1:
-    st.button("🎲 Roll", use_container_width=True, on_click=roll)
-with c2:
-    st.button("Reset", use_container_width=True, on_click=reset)
-with c3:
-    if st.button("Bingo?", use_container_width=True):
-        st.session_state.show_rules = not st.session_state.show_rules
 
-if st.session_state.show_rules:
+st.markdown(
+    """
+<div class="header">
+    <div style="font-size:2rem;">⚂ 🎲 ⚄</div>
+    <div class="title">✦ Wings of Glory ✦<br>LOW RANK BINGO</div>
+    <div class="subtitle">casino roll mode</div>
+    <div class="neon"></div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+with st.container():
+    st.markdown('<div class="control-row">', unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns([1, 1, 1, 1.2])
+    with c1:
+        if st.button("🎲 Roll all", use_container_width=True):
+            roll_all()
+            st.rerun()
+    with c2:
+        if st.button("Reset marks", use_container_width=True):
+            reset_all()
+            st.rerun()
+    with c3:
+        rules = st.toggle("Rules", value=False)
+    with c4:
+        board_count = st.selectbox("Boards", [1, 2, 3, 4, 5, 6], index=0)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+ensure_boards(board_count)
+
+if rules:
     st.markdown(
         """
-        <div class="rules">
-        <b>Rules</b><br>
-        • Click a square when it happens<br>
-        • FREE SPACE is already marked<br>
-        • 5 in a row = BINGO<br>
-        • Rows, columns, diagonals count<br>
-        • Roll makes a new random board
-        </div>
-        """,
-        unsafe_allow_html=True
+<div class="rules">
+<b>Rules</b><br>
+• Click a square when it happens<br>
+• FREE SPACE is already marked<br>
+• 5 in a row = BINGO<br>
+• Rows, columns, diagonals count<br>
+• Roll all makes fresh random boards
+</div>
+""",
+        unsafe_allow_html=True,
     )
 
-# Render board as Streamlit buttons so clicks persist.
-for r in range(5):
-    cols = st.columns(5, gap="small")
-    for c, col in enumerate(cols):
-        i = r * 5 + c
-        text = st.session_state.board[i]
-        marked = i in st.session_state.marked
-        label = "FREE SPACE" if i == 12 else text
+# 1-2 boards per row depending on count/window.
+if board_count == 1:
+    boards_per_row = 1
+elif board_count <= 4:
+    boards_per_row = 2
+else:
+    boards_per_row = 3
+
+for start in range(0, board_count, boards_per_row):
+    board_cols = st.columns(boards_per_row, gap="large")
+    for offset, col in enumerate(board_cols):
+        b = start + offset
+        if b >= board_count:
+            continue
 
         with col:
-            clicked = st.button(
-                label,
-                key=f"cell_{i}_{text}",
-                use_container_width=True,
-                disabled=(i == 12)
-            )
-            if clicked:
-                if i in st.session_state.marked:
-                    st.session_state.marked.remove(i)
-                else:
-                    st.session_state.marked.add(i)
-                st.rerun()
+            st.markdown(f'<div class="board-title">BOARD {b + 1}</div>', unsafe_allow_html=True)
 
-# Pretty visual board below/overrides button ugliness with CSS targeting is limited in Streamlit,
-# so this gives a clean readout of current marked state.
-html_cells = []
-for i, item in enumerate(st.session_state.board):
-    classes = ["cell"]
-    if i % 2:
-        classes.append("alt")
-    if i == 12:
-        classes.append("free")
-    if i in st.session_state.marked:
-        classes.append("marked")
-    html_cells.append(f'<div class="{" ".join(classes)}">{item}</div>')
+            if has_bingo(st.session_state.marked[b]):
+                st.markdown(
+                    """
+<div style="
+text-align:center;
+font-size:2.2rem;
+font-weight:1000;
+color:#ffd166;
+text-shadow:0 0 14px #ffd166, 0 0 28px #ef476f;
+margin-bottom:.4rem;
+animation: glow 1s ease-in-out infinite alternate;">
+BINGO!
+</div>
+""",
+                    unsafe_allow_html=True,
+                )
 
-st.markdown('<div class="board">' + "".join(html_cells) + '</div>', unsafe_allow_html=True)
+            st.markdown('<div class="board-shell"><div class="board-inner">', unsafe_allow_html=True)
 
-if has_bingo(st.session_state.marked):
-    st.markdown('<div class="big-bingo">BINGO!<br>JACKPOT HIT</div>', unsafe_allow_html=True)
+            for r in range(5):
+                row_cols = st.columns(5, gap="small")
+                for c, cell_col in enumerate(row_cols):
+                    cell_i = r * 5 + c
+                    label = st.session_state.boards[b][cell_i]
+
+                    if cell_i == 12:
+                        shown = "FREE\nSPACE"
+                    elif cell_i in st.session_state.marked[b]:
+                        shown = "✓ " + label
+                    else:
+                        shown = label
+
+                    with cell_col:
+                        if st.button(
+                            shown,
+                            key=f"b{b}_cell{cell_i}_{label}",
+                            use_container_width=True,
+                            disabled=(cell_i == 12),
+                        ):
+                            toggle(b, cell_i)
+                            st.rerun()
+
+            st.markdown("</div></div>", unsafe_allow_html=True)
+
+st.caption("Tip: if text is still too tight, use fewer boards or make the browser window wider.")
