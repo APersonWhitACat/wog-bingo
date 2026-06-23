@@ -19,6 +19,516 @@ iframe { display: block; margin: 0 auto; }
 </style>
 """, unsafe_allow_html=True)
 
-html = "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<style>\n:root{\n  --bg:#070910;\n  --grid-line:#4a3510;\n  --cell:#172033;\n  --cell2:#1b2740;\n  --marked:#138a52;\n  --free:#532e86;\n  --gold:#ffd166;\n  --gold2:#ffb703;\n  --red:#ef476f;\n  --blue:#4cc9f0;\n  --green:#06d6a0;\n  --purple:#b517ff;\n  --text:#f8fafc;\n  --muted:#a8b3c7;\n}\n*{box-sizing:border-box}\nhtml,body{\n  margin:0;\n  background:var(--bg);\n  color:var(--text);\n  font-family:\"Segoe UI\",Arial,sans-serif;\n  overflow:hidden;\n}\n.app{\n  width:535px;\n  max-width:100vw;\n  height:620px;\n  max-height:100vh;\n  margin:0 auto;\n  padding:7px 8px 5px;\n  background:var(--bg);\n  display:flex;\n  flex-direction:column;\n}\n.header{\n  display:flex;\n  align-items:flex-start;\n  justify-content:center;\n  gap:8px;\n  flex:0 0 auto;\n}\n.dice{\n  width:42px;\n  text-align:center;\n  color:var(--gold);\n  font-size:24px;\n  line-height:1;\n  padding-top:0;\n}\n.title-wrap{text-align:center}\n.title{\n  color:var(--gold);\n  font-size:18px;\n  font-weight:700;\n  line-height:1.15;\n}\n.subtitle{\n  color:var(--muted);\n  font-size:11px;\n  font-weight:700;\n  margin-top:1px;\n}\n.controls{\n  display:flex;\n  justify-content:center;\n  gap:4px;\n  margin:4px 0;\n  flex:0 0 auto;\n}\n.btn{\n  background:#251a08;\n  color:var(--gold);\n  border:0;\n  padding:4px 8px;\n  font-size:8px;\n  font-weight:700;\n  font-family:\"Segoe UI\",Arial,sans-serif;\n  cursor:pointer;\n  height:24px;\n  min-width:48px;\n}\n.btn:hover{background:#4a320b;color:#fff4c7}\n.btn:active{filter:brightness(.9)}\n.neon{\n  height:2px;\n  background:var(--gold);\n  margin:0 28px 4px;\n  flex:0 0 auto;\n  animation:neonIdle 3s linear infinite;\n}\n@keyframes neonIdle{\n  0%{background:var(--gold)}\n  20%{background:var(--blue)}\n  40%{background:var(--red)}\n  60%{background:var(--green)}\n  80%{background:var(--purple)}\n  100%{background:var(--gold)}\n}\n.outer{\n  background:var(--gold2);\n  padding:2px;\n  flex:1 1 auto;\n  min-height:0;\n  display:flex;\n}\n.inner{\n  background:#2b210e;\n  padding:2px;\n  flex:1 1 auto;\n  display:flex;\n  min-height:0;\n}\n.board{\n  background:var(--grid-line);\n  display:grid;\n  grid-template-columns:repeat(5,1fr);\n  grid-template-rows:repeat(5,1fr);\n  gap:2px;\n  padding:0;\n  flex:1 1 auto;\n  min-height:0;\n}\n.cell{\n  border:0;\n  background:var(--cell);\n  color:var(--text);\n  font-family:\"Segoe UI\",Arial,sans-serif;\n  font-weight:700;\n  font-size:8px;\n  line-height:1.12;\n  padding:2px;\n  text-align:center;\n  display:flex;\n  align-items:center;\n  justify-content:center;\n  cursor:pointer;\n  user-select:none;\n  overflow:hidden;\n  white-space:pre-line;\n  transition:background .08s ease, color .08s ease, filter .08s ease, transform .08s ease;\n}\n.cell.alt{background:var(--cell2)}\n.cell:hover:not(.free){filter:brightness(1.12)}\n.cell.free{\n  background:var(--free);\n  color:var(--gold);\n  font-size:13px;\n  font-weight:700;\n  font-style:italic;\n  cursor:default;\n}\n.cell.marked{\n  background:var(--marked)!important;\n  color:#ecfff4;\n}\n.cell.pulse1{background:#2ee88e!important;color:#ecfff4}\n.cell.pulse2{background:#20b875!important;color:#ecfff4}\n.cell.pop{animation:cellPop .18s ease}\n@keyframes cellPop{\n  0%{transform:scale(.96);filter:brightness(1.25)}\n  70%{transform:scale(1.035);filter:brightness(1.12)}\n  100%{transform:scale(1);filter:brightness(1)}\n}\n.cell.roll{\n  animation:rollFlash .16s ease;\n}\n@keyframes rollFlash{\n  0%{filter:brightness(.75)}\n  70%{filter:brightness(1.3)}\n  100%{filter:brightness(1)}\n}\n.status{\n  color:var(--muted);\n  font-size:8px;\n  text-align:center;\n  padding-top:3px;\n  flex:0 0 auto;\n}\n.overlay{\n  position:fixed;\n  inset:0;\n  background:#000;\n  z-index:50;\n  display:none;\n  align-items:center;\n  justify-content:center;\n  text-align:center;\n  overflow:hidden;\n}\n.overlay.show{display:flex}\n.bingo-text{\n  color:var(--gold);\n  font-size:50px;\n  font-weight:700;\n  line-height:1;\n  position:relative;\n  z-index:3;\n  animation:bingoPulse .5s ease-in-out infinite alternate;\n}\n@keyframes bingoPulse{\n  from{transform:scale(.95);filter:brightness(1)}\n  to{transform:scale(1.12);filter:brightness(1.25)}\n}\n.bingo-sub{\n  color:var(--text);\n  font-size:15px;\n  font-weight:700;\n  margin-top:12px;\n  position:relative;\n  z-index:3;\n}\n.bingo-hint{\n  color:var(--muted);\n  font-size:9px;\n  margin-top:16px;\n  position:relative;\n  z-index:3;\n}\n.star{\n  position:fixed;\n  z-index:2;\n  font-weight:700;\n  pointer-events:none;\n  animation:starFade .5s ease forwards;\n}\n@keyframes starFade{\n  0%{opacity:1;transform:scale(.7) rotate(0deg)}\n  100%{opacity:0;transform:scale(1.6) rotate(90deg)}\n}\n.rules-box{\n  position:fixed;\n  inset:0;\n  display:none;\n  align-items:center;\n  justify-content:center;\n  background:rgba(0,0,0,.72);\n  z-index:40;\n}\n.rules-box.show{display:flex}\n.rules-card{\n  width:360px;\n  max-width:92vw;\n  background:#000;\n  border:2px solid var(--gold2);\n  color:var(--text);\n  padding:18px;\n}\n.rules-card h2{\n  margin:0 0 10px;\n  color:var(--gold);\n  font-size:30px;\n}\n.rules-card p{\n  margin:8px 0;\n  font-size:14px;\n  font-weight:700;\n}\n.rules-card button{\n  margin-top:12px;\n  width:100%;\n}\n</style>\n</head>\n<body>\n<div class=\"app\">\n  <div class=\"header\">\n    <div class=\"dice\" id=\"leftDice\">\u2684</div>\n    <div class=\"title-wrap\">\n      <div class=\"title\" id=\"title\">\u2726 Wings of Glory \u2726</div>\n      <div class=\"subtitle\">LOW RANK BINGO</div>\n    </div>\n    <div class=\"dice\" id=\"rightDice\">\u2682</div>\n  </div>\n\n  <div class=\"controls\">\n    <button class=\"btn\" onclick=\"rollBoard()\">Roll \ud83c\udfb2</button>\n    <button class=\"btn\" onclick=\"resetMarks()\">Reset</button>\n    <button class=\"btn\" onclick=\"showRules()\">Bingo?</button>\n    <button class=\"btn\" onclick=\"toggleFull()\">Full</button>\n  </div>\n\n  <div class=\"neon\" id=\"neon\"></div>\n\n  <div class=\"outer\">\n    <div class=\"inner\">\n      <div class=\"board\" id=\"board\"></div>\n    </div>\n  </div>\n\n  <div class=\"status\" id=\"status\">Roll, mark squares, chase bingo.</div>\n</div>\n\n<div class=\"rules-box\" id=\"rules\" onclick=\"rulesBackdrop(event)\">\n  <div class=\"rules-card\">\n    <h2>Rules</h2>\n    <p>\u2022 Click a square when it happens</p>\n    <p>\u2022 FREE SPACE is already marked</p>\n    <p>\u2022 5 in a row = BINGO</p>\n    <p>\u2022 Rows, columns, diagonals count</p>\n    <p>\u2022 Roll makes a new random board</p>\n    <button class=\"btn\" onclick=\"hideRules()\">Close</button>\n  </div>\n</div>\n\n<div class=\"overlay\" id=\"bingoOverlay\" onclick=\"hideBingo()\">\n  <div>\n    <div class=\"bingo-text\" id=\"bingoText\">BINGO!</div>\n    <div class=\"bingo-sub\">JACKPOT HIT</div>\n    <div class=\"bingo-hint\">click anywhere or press Esc to close</div>\n  </div>\n</div>\n\n<script>\nconst ITEMS = [\"\\\"add 5th gen aircrafts!\\\"\", \"DOGSHIT opinion or suggestion\", \"corny ass profile/pfp\", \"\\\"errrmm is all bvr so it's LAME\\\"\", \"chaff = flare\", \"thinks they're good\", \"nerf f14a or phoenix missiles\", \"compares wog to wt\", \"doesn't know any bfm/acm\", \"\\\"codes?\\\"\", \"add their favorite niche aircraft\", \"\\\"i have a life/whats wrong with low rank\\\"\", \"realized they have no image perms\", \"\\\"My rank ingame is higher\\\"\", \"extremely biased\", \"intentional rule breaking\", \"\\\"when update?\\\" bro the update is soon chilllll\", \"bitching about killstealing\", \"\\\"(decent plane) is so bad\\\"\", \"\\\"(premium plane) is p2w...\\\"\", \"\\\"add (insert nation) tree!\\\"\", \"can't lose their argument\", \"rants about russian aircrafts\", \"huge fuckass ego\"];\nconst diceFaces = [\"\u2680\",\"\u2681\",\"\u2682\",\"\u2683\",\"\u2684\",\"\u2685\"];\nconst colors = [\"#ffd166\",\"#4cc9f0\",\"#ef476f\",\"#06d6a0\",\"#ffffff\"];\nlet board = [];\nlet marked = new Set([12]);\nlet animating = false;\nlet idle = 0;\n\nfunction shuffle(arr){\n  const a=[...arr];\n  for(let i=a.length-1;i>0;i--){\n    const j=Math.floor(Math.random()*(i+1));\n    [a[i],a[j]]=[a[j],a[i]];\n  }\n  return a;\n}\n\nfunction makeBoard(){\n  const items=shuffle(ITEMS);\n  let out=[], idx=0;\n  for(let i=0;i<25;i++){\n    out.push(i===12 ? \"FREE SPACE\" : items[idx++]);\n  }\n  return out;\n}\n\nfunction wrapText(text,maxChars){\n  if(text===\"FREE SPACE\") return \"FREE\\nSPACE\";\n  const words=text.split(\" \");\n  let lines=[], line=\"\";\n  for(const word of words){\n    if(!line) line=word;\n    else if((line+\" \"+word).length<=maxChars) line += \" \"+word;\n    else{lines.push(line); line=word;}\n  }\n  if(line) lines.push(line);\n  return lines.join(\"\\n\");\n}\n\nfunction currentMaxChars(){\n  const el=document.querySelector(\".cell\");\n  if(!el) return 14;\n  const w=el.getBoundingClientRect().width;\n  if(w<80) return 10;\n  if(w<100) return 12;\n  if(w<120) return 14;\n  return 16;\n}\n\nfunction render(){\n  const root=document.getElementById(\"board\");\n  root.innerHTML=\"\";\n  const maxChars=currentMaxChars();\n  for(let i=0;i<25;i++){\n    const c=document.createElement(\"div\");\n    c.className=\"cell\";\n    const row=Math.floor(i/5), col=i%5;\n    if((row+col)%2!==0) c.classList.add(\"alt\");\n    if(i===12) c.classList.add(\"free\");\n    if(marked.has(i)) c.classList.add(\"marked\");\n    c.dataset.index=i;\n    c.dataset.text=board[i];\n    c.textContent=wrapText(board[i],maxChars);\n    c.onclick=()=>toggleCell(i);\n    root.appendChild(c);\n  }\n}\n\nfunction cellAt(i){\n  return document.querySelector('.cell[data-index=\"'+i+'\"]');\n}\n\nfunction applyBoard(newBoard){\n  board=newBoard;\n  marked=new Set([12]);\n  render();\n}\n\nfunction rollBoard(){\n  if(animating) return;\n  animating=true;\n  document.getElementById(\"status\").textContent=\"Rolling...\";\n  animateDice(0);\n  const finalBoard=makeBoard();\n  const steps=14;\n\n  function spin(step){\n    const temp=makeBoard();\n    const maxChars=currentMaxChars();\n    for(let i=0;i<25;i++){\n      const c=cellAt(i);\n      if(!c) continue;\n      if(i===12){\n        c.textContent=\"FREE\\nSPACE\";\n        c.className=\"cell free marked\";\n      }else{\n        c.dataset.text=temp[i];\n        c.textContent=wrapText(temp[i],maxChars);\n        c.className=\"cell\";\n        const row=Math.floor(i/5), col=i%5;\n        if((row+col)%2!==0) c.classList.add(\"alt\");\n        c.style.background=randomChoice([\"#172033\",\"#1b2740\",\"#2a1f3d\",\"#263554\"]);\n        c.style.color=randomChoice([\"#f8fafc\",\"#ffd166\",\"#4cc9f0\"]);\n        c.classList.add(\"roll\");\n      }\n    }\n\n    if(step<steps){\n      setTimeout(()=>spin(step+1),30+step*6);\n    }else{\n      document.querySelectorAll(\".cell\").forEach(c=>{c.style.background=\"\";c.style.color=\"\";});\n      applyBoard(finalBoard);\n      flashTitle(0);\n      document.getElementById(\"status\").textContent=\"Rolled. Click squares to mark.\";\n      animating=false;\n    }\n  }\n  spin(0);\n}\n\nfunction animateDice(step){\n  const l=document.getElementById(\"leftDice\");\n  const r=document.getElementById(\"rightDice\");\n  l.textContent=randomChoice(diceFaces);\n  r.textContent=randomChoice(diceFaces);\n  l.style.color=randomChoice([\"#ffd166\",\"#4cc9f0\",\"#ef476f\",\"#06d6a0\"]);\n  r.style.color=randomChoice([\"#ffd166\",\"#4cc9f0\",\"#ef476f\",\"#06d6a0\"]);\n  if(step<18){\n    setTimeout(()=>animateDice(step+1),65);\n  }else{\n    l.textContent=randomChoice(diceFaces);\n    r.textContent=randomChoice(diceFaces);\n    l.style.color=\"#ffd166\";\n    r.style.color=\"#ffd166\";\n  }\n}\n\nfunction randomChoice(arr){return arr[Math.floor(Math.random()*arr.length)];}\n\nfunction flashTitle(n){\n  const t=document.getElementById(\"title\");\n  if(n>=8){t.style.color=\"#ffd166\";return;}\n  t.style.color=(n%2===0) ? \"#4cc9f0\" : \"#ffd166\";\n  setTimeout(()=>flashTitle(n+1),100);\n}\n\nfunction resetMarks(){\n  marked=new Set([12]);\n  render();\n  document.getElementById(\"status\").textContent=\"Marks reset.\";\n}\n\nfunction toggleCell(i){\n  if(i===12 || animating) return;\n  const c=cellAt(i);\n  if(marked.has(i)){\n    marked.delete(i);\n    c.classList.remove(\"marked\",\"pulse1\",\"pulse2\");\n    const row=Math.floor(i/5), col=i%5;\n    c.className=\"cell\";\n    if((row+col)%2!==0) c.classList.add(\"alt\");\n  }else{\n    marked.add(i);\n    pulseMark(c,0);\n  }\n  if(hasBingo()) showBingo();\n}\n\nfunction pulseMark(c,step){\n  c.classList.remove(\"pulse1\",\"pulse2\",\"marked\");\n  void c.offsetWidth;\n  if(step===0) c.classList.add(\"pulse1\");\n  if(step===1) c.classList.add(\"pulse2\");\n  if(step===2) c.classList.add(\"marked\");\n  c.classList.add(\"pop\");\n  if(step<2){\n    setTimeout(()=>pulseMark(c,step+1),70);\n  }\n}\n\nfunction winLines(){\n  const lines=[];\n  for(let r=0;r<5;r++) lines.push([0,1,2,3,4].map(c=>r*5+c));\n  for(let c=0;c<5;c++) lines.push([0,1,2,3,4].map(r=>r*5+c));\n  lines.push([0,6,12,18,24]);\n  lines.push([4,8,12,16,20]);\n  return lines;\n}\n\nfunction hasBingo(){\n  return winLines().some(line=>line.every(i=>marked.has(i)));\n}\n\nfunction showBingo(){\n  const overlay=document.getElementById(\"bingoOverlay\");\n  overlay.classList.add(\"show\");\n  bingoAnimation(0);\n}\n\nfunction bingoAnimation(step){\n  const overlay=document.getElementById(\"bingoOverlay\");\n  if(!overlay.classList.contains(\"show\")) return;\n\n  const text=document.getElementById(\"bingoText\");\n  const sizes=[48,54,60,56,52,58];\n  text.style.color=randomChoice(colors);\n  text.style.fontSize=sizes[step%sizes.length]+\"px\";\n\n  if(step<26){\n    for(let i=0;i<5;i++){\n      const star=document.createElement(\"div\");\n      star.className=\"star\";\n      star.textContent=randomChoice([\"\u2726\",\"\u2727\",\"\u2605\",\"\u2666\",\"\u25cf\"]);\n      star.style.left=(Math.random()*100)+\"vw\";\n      star.style.top=(Math.random()*100)+\"vh\";\n      star.style.fontSize=(10+Math.random()*10)+\"px\";\n      star.style.color=randomChoice(colors);\n      document.body.appendChild(star);\n      setTimeout(()=>star.remove(),500);\n    }\n    setTimeout(()=>bingoAnimation(step+1),90);\n  }else{\n    text.style.color=\"#ffd166\";\n    text.style.fontSize=\"56px\";\n  }\n}\n\nfunction hideBingo(){\n  document.getElementById(\"bingoOverlay\").classList.remove(\"show\");\n}\n\nfunction showRules(){document.getElementById(\"rules\").classList.add(\"show\");}\nfunction hideRules(){document.getElementById(\"rules\").classList.remove(\"show\");}\nfunction rulesBackdrop(e){if(e.target.id===\"rules\") hideRules();}\n\nfunction toggleFull(){\n  try{\n    if(document.fullscreenElement) document.exitFullscreen();\n    else document.documentElement.requestFullscreen();\n  }catch(e){}\n}\n\nfunction idleAnimation(){\n  const neon=document.getElementById(\"neon\");\n  const palette=[\"#ffd166\",\"#4cc9f0\",\"#ef476f\",\"#06d6a0\",\"#b517ff\"];\n  neon.style.background=palette[idle%palette.length];\n  if(idle%6===0 && !animating){\n    document.getElementById(\"leftDice\").textContent=randomChoice(diceFaces);\n    document.getElementById(\"rightDice\").textContent=randomChoice(diceFaces);\n  }\n  idle++;\n  setTimeout(idleAnimation,700);\n}\n\ndocument.addEventListener(\"keydown\",e=>{\n  if(e.key===\"Escape\"){hideBingo();hideRules();}\n});\nwindow.addEventListener(\"resize\",render);\n\napplyBoard(makeBoard());\nidleAnimation();\n</script>\n</body>\n</html>\n"
+html = r"""
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+:root{
+  --bg:#070910;
+  --cell:#172033;
+  --cell2:#1b2740;
+  --grid:#4a3510;
+  --gold:#ffd166;
+  --gold2:#ffb703;
+  --purple:#b517ff;
+  --free:#5b3a93;
+  --green1:#258f55;
+  --green2:#39b875;
+  --text:#f8fafc;
+  --muted:#aeb8c8;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Segoe UI",Arial,sans-serif;
+  overflow:hidden;
+}
+.app{
+  width:535px;
+  max-width:100vw;
+  height:620px;
+  max-height:100vh;
+  margin:0 auto;
+  padding:7px 8px 5px;
+  background:var(--bg);
+  display:flex;
+  flex-direction:column;
+}
+.header{
+  text-align:center;
+  flex:0 0 auto;
+}
+.icon-row{
+  height:26px;
+  width:100%;
+  position:relative;
+}
+.icon-box{
+  position:absolute;
+  top:2px;
+  width:25px;
+  height:25px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,209,102,.55);
+  color:var(--gold);
+  background:#101522;
+  font-size:15px;
+  box-shadow:0 0 7px rgba(255,209,102,.25);
+}
+.icon-box.left{left:110px}
+.icon-box.right{
+  right:110px;
+  color:#a93cff;
+  border-color:rgba(169,60,255,.65);
+  box-shadow:0 0 8px rgba(169,60,255,.32);
+}
+.title{
+  color:var(--gold);
+  font-size:25px;
+  line-height:1;
+  font-weight:800;
+  text-shadow:0 0 8px rgba(255,209,102,.35);
+}
+.subtitle{
+  margin-top:4px;
+  color:#c5d0de;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  text-shadow:0 0 4px rgba(197,208,222,.22);
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  margin:9px auto 7px;
+  flex:0 0 auto;
+}
+.btn{
+  height:30px;
+  min-width:58px;
+  border:0;
+  background:#251a08;
+  color:var(--gold);
+  font-family:"Segoe UI",Arial,sans-serif;
+  font-size:12px;
+  font-weight:700;
+  padding:0 10px;
+  cursor:pointer;
+}
+.btn:hover{background:#3a280b;color:#fff1bd}
+.btn:active{filter:brightness(.85)}
+.neon{
+  height:4px;
+  margin:0 24px 7px;
+  background:var(--purple);
+  box-shadow:0 0 8px rgba(181,23,255,.9);
+  flex:0 0 auto;
+}
+.outer{
+  background:var(--gold2);
+  padding:3px;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  box-shadow:0 0 9px rgba(255,183,3,.28);
+}
+.inner{
+  background:#2b210e;
+  padding:3px;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+}
+.board{
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:repeat(5,1fr);
+  gap:3px;
+  background:var(--grid);
+}
+.cell{
+  position:relative;
+  background:var(--cell);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  white-space:pre-line;
+  padding:4px;
+  font-size:11px;
+  line-height:1.13;
+  font-weight:800;
+  overflow:hidden;
+  cursor:pointer;
+  user-select:none;
+  transition:filter .10s ease, transform .10s ease, background .10s ease, color .10s ease;
+}
+.cell.alt{background:var(--cell2)}
+.cell:hover:not(.free){filter:brightness(1.12)}
+.cell.free{
+  background:var(--free)!important;
+  color:var(--gold);
+  font-size:18px;
+  font-style:italic;
+  font-weight:800;
+  cursor:default;
+  text-shadow:0 0 5px rgba(255,209,102,.26);
+}
+.cell.marked{
+  background:var(--green1)!important;
+  color:#ecfff4;
+}
+.cell.marked.alt{
+  background:var(--green2)!important;
+}
+.cell.pulse1{background:#40c985!important;color:#ecfff4}
+.cell.pulse2{background:#22a86a!important;color:#ecfff4}
+.cell.pop{animation:pop .20s ease}
+@keyframes pop{
+  0%{transform:scale(.96);filter:brightness(1.25)}
+  70%{transform:scale(1.035);filter:brightness(1.12)}
+  100%{transform:scale(1);filter:brightness(1)}
+}
+.cell.roll{animation:roll .18s ease}
+@keyframes roll{
+  0%{filter:brightness(.72)}
+  70%{filter:brightness(1.26)}
+  100%{filter:brightness(1)}
+}
+.overlay{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:#000;
+  z-index:40;
+  text-align:center;
+  overflow:hidden;
+}
+.overlay.show{display:flex}
+.bingo-main{
+  position:relative;
+  z-index:3;
+  color:var(--gold);
+  font-size:56px;
+  font-weight:900;
+  line-height:1;
+  text-shadow:0 0 12px rgba(255,209,102,.9);
+  animation:bingoPulse .55s ease-in-out infinite alternate;
+}
+@keyframes bingoPulse{
+  from{transform:scale(.95);filter:brightness(1)}
+  to{transform:scale(1.12);filter:brightness(1.25)}
+}
+.bingo-sub{
+  position:relative;
+  z-index:3;
+  margin-top:10px;
+  font-size:15px;
+  font-weight:800;
+  color:#ffffff;
+}
+.bingo-hint{
+  position:relative;
+  z-index:3;
+  margin-top:16px;
+  font-size:9px;
+  color:var(--muted);
+}
+.star{
+  position:fixed;
+  z-index:2;
+  pointer-events:none;
+  font-weight:900;
+  animation:star .55s ease forwards;
+}
+@keyframes star{
+  from{opacity:1;transform:scale(.6) rotate(0deg)}
+  to{opacity:0;transform:scale(1.7) rotate(100deg)}
+}
+.rules{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.72);
+  z-index:35;
+}
+.rules.show{display:flex}
+.card{
+  width:360px;
+  max-width:92vw;
+  background:#000;
+  border:2px solid var(--gold2);
+  padding:18px;
+}
+.card h2{
+  margin:0 0 10px;
+  color:var(--gold);
+  font-size:30px;
+}
+.card p{
+  margin:8px 0;
+  font-size:14px;
+  font-weight:700;
+}
+.card button{width:100%;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="icon-row">
+      <div class="icon-box left">▦</div>
+      <div class="icon-box right">▣</div>
+    </div>
+    <div class="title">✦ Wings of Glory ✦</div>
+    <div class="subtitle">Low Rank Bingo</div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="rollBoard()">Roll 👁</button>
+    <button class="btn" onclick="resetMarks()">Reset</button>
+    <button class="btn" onclick="showRules()">Bingo?</button>
+    <button class="btn" onclick="toggleFull()">Full</button>
+  </div>
+
+  <div class="neon"></div>
+
+  <div class="outer">
+    <div class="inner">
+      <div class="board" id="board"></div>
+    </div>
+  </div>
+</div>
+
+<div class="rules" id="rules" onclick="rulesBackdrop(event)">
+  <div class="card">
+    <h2>Rules</h2>
+    <p>• Click a square when it happens</p>
+    <p>• FREE SPACE is already marked</p>
+    <p>• 5 in a row = BINGO</p>
+    <p>• Rows, columns, diagonals count</p>
+    <button class="btn" onclick="hideRules()">Close</button>
+  </div>
+</div>
+
+<div class="overlay" id="bingoOverlay" onclick="hideBingo()">
+  <div>
+    <div class="bingo-main" id="bingoText">BINGO!</div>
+    <div class="bingo-sub">JACKPOT HIT</div>
+    <div class="bingo-hint">click anywhere or press Esc to close</div>
+  </div>
+</div>
+
+<script>
+const ITEMS = __ITEMS_JSON__;
+const colors = ["#ffd166","#4cc9f0","#ef476f","#06d6a0","#ffffff"];
+let board = [];
+let marked = new Set([12]);
+let rolling = false;
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    const t=a[i]; a[i]=a[j]; a[j]=t;
+  }
+  return a;
+}
+function makeBoard(){
+  const list=shuffle(ITEMS);
+  const b=[];
+  let x=0;
+  for(let i=0;i<25;i++){
+    b.push(i===12 ? "FREE SPACE" : list[x++]);
+  }
+  return b;
+}
+function wrapText(text){
+  if(text==="FREE SPACE") return "FREE\nSPACE";
+  const max=13;
+  const words=text.split(" ");
+  const lines=[];
+  let line="";
+  for(let i=0;i<words.length;i++){
+    const w=words[i];
+    if(line==="") line=w;
+    else if((line+" "+w).length<=max) line=line+" "+w;
+    else{lines.push(line); line=w;}
+  }
+  if(line) lines.push(line);
+  return lines.join("\n");
+}
+function render(){
+  const root=document.getElementById("board");
+  root.innerHTML="";
+  for(let i=0;i<25;i++){
+    const c=document.createElement("div");
+    const row=Math.floor(i/5);
+    const col=i%5;
+    c.className="cell";
+    if((row+col)%2===1)c.classList.add("alt");
+    if(i===12)c.classList.add("free");
+    if(marked.has(i))c.classList.add("marked");
+    c.dataset.i=i;
+    c.textContent=wrapText(board[i]);
+    c.onclick=function(){toggleCell(i);};
+    root.appendChild(c);
+  }
+}
+function cellAt(i){
+  return document.querySelector('.cell[data-i="'+i+'"]');
+}
+function setNewBoard(){
+  board=makeBoard();
+  marked=new Set([12]);
+  render();
+}
+function toggleCell(i){
+  if(i===12 || rolling)return;
+  const c=cellAt(i);
+  if(marked.has(i)){
+    marked.delete(i);
+    c.classList.remove("marked","pulse1","pulse2","pop");
+    const row=Math.floor(i/5);
+    const col=i%5;
+    c.className="cell";
+    if((row+col)%2===1)c.classList.add("alt");
+  }else{
+    marked.add(i);
+    pulseCell(c,0);
+  }
+  if(hasBingo())showBingo();
+}
+function pulseCell(c,step){
+  c.classList.remove("marked","pulse1","pulse2","pop");
+  void c.offsetWidth;
+  if(step===0)c.classList.add("pulse1");
+  if(step===1)c.classList.add("pulse2");
+  if(step===2)c.classList.add("marked");
+  c.classList.add("pop");
+  if(step<2)setTimeout(function(){pulseCell(c,step+1);},70);
+}
+function rollBoard(){
+  if(rolling)return;
+  rolling=true;
+  const finalB=makeBoard();
+  let step=0;
+  function spin(){
+    const temp=makeBoard();
+    for(let i=0;i<25;i++){
+      const c=cellAt(i);
+      if(!c)continue;
+      if(i===12){
+        c.className="cell free";
+        c.textContent="FREE\nSPACE";
+      }else{
+        c.textContent=wrapText(temp[i]);
+        c.className="cell";
+        const row=Math.floor(i/5);
+        const col=i%5;
+        if((row+col)%2===1)c.classList.add("alt");
+        c.style.background=randomPick(["#172033","#1b2740","#2a1f3d","#263554"]);
+        c.style.color=randomPick(["#f8fafc","#ffd166","#4cc9f0"]);
+        c.classList.add("roll");
+      }
+    }
+    if(step<13){
+      step++;
+      setTimeout(spin,30+step*6);
+    }else{
+      document.querySelectorAll(".cell").forEach(function(c){
+        c.style.background="";
+        c.style.color="";
+      });
+      board=finalB;
+      marked=new Set([12]);
+      rolling=false;
+      render();
+    }
+  }
+  spin();
+}
+function resetMarks(){
+  marked=new Set([12]);
+  render();
+}
+function winLines(){
+  const lines=[];
+  for(let r=0;r<5;r++)lines.push([0,1,2,3,4].map(function(c){return r*5+c;}));
+  for(let c=0;c<5;c++)lines.push([0,1,2,3,4].map(function(r){return r*5+c;}));
+  lines.push([0,6,12,18,24]);
+  lines.push([4,8,12,16,20]);
+  return lines;
+}
+function hasBingo(){
+  return winLines().some(function(line){
+    return line.every(function(i){return marked.has(i);});
+  });
+}
+function showBingo(){
+  document.getElementById("bingoOverlay").classList.add("show");
+  bingoAnim(0);
+}
+function hideBingo(){
+  document.getElementById("bingoOverlay").classList.remove("show");
+}
+function bingoAnim(step){
+  const overlay=document.getElementById("bingoOverlay");
+  if(!overlay.classList.contains("show"))return;
+  const text=document.getElementById("bingoText");
+  text.style.color=randomPick(colors);
+  text.style.fontSize=randomPick(["50px","56px","62px","58px"]);
+  for(let i=0;i<5;i++){
+    const s=document.createElement("div");
+    s.className="star";
+    s.textContent=randomPick(["✦","✧","★","♦","●"]);
+    s.style.left=(Math.random()*100)+"vw";
+    s.style.top=(Math.random()*100)+"vh";
+    s.style.fontSize=(10+Math.random()*12)+"px";
+    s.style.color=randomPick(colors);
+    document.body.appendChild(s);
+    setTimeout(function(){s.remove();},560);
+  }
+  if(step<28)setTimeout(function(){bingoAnim(step+1);},90);
+  else{
+    text.style.color="#ffd166";
+    text.style.fontSize="56px";
+  }
+}
+function showRules(){document.getElementById("rules").classList.add("show");}
+function hideRules(){document.getElementById("rules").classList.remove("show");}
+function rulesBackdrop(e){if(e.target.id==="rules")hideRules();}
+function randomPick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function toggleFull(){
+  try{
+    if(document.fullscreenElement)document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  }catch(e){}
+}
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"){hideBingo();hideRules();}
+});
+setNewBoard();
+</script>
+</body>
+</html>
+"""
+
+html = html.replace("__ITEMS_JSON__", '["\\"add 5th gen aircrafts!\\"", "DOGSHIT opinion or suggestion", "corny ass profile/pfp", "\\"errrmm is all bvr so it\'s LAME\\"", "chaff = flare", "thinks they\'re good", "nerf f14a or phoenix missiles", "compares wog to wt", "doesn\'t know any bfm/acm", "\\"codes?\\"", "add their favorite niche aircraft", "\\"i have a life/whats wrong with low rank\\"", "realized they have no image perms", "\\"My rank ingame is higher\\"", "extremely biased", "intentional rule breaking", "\\"when update?\\" bro the update is soon chilllll", "bitching about killstealing", "\\"(decent plane) is so bad\\"", "\\"(premium plane) is p2w...\\"", "\\"add (insert nation) tree!\\"", "can\'t lose their argument", "rants about russian aircrafts", "huge fuckass ego"]')
 
 components.html(html, height=620, scrolling=False)
